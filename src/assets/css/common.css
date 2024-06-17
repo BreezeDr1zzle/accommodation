@@ -4,5 +4,17 @@ body {
 }
 
 :root {
-    --primary-color: #ff9854
+    /*修改tabbar图标颜色*/
+    --primary-color: #ff9854;
+    /*修改搜索框颜色*/
+    --van-search-left-icon-color: var(--primary-color) !important;
+    --van-tabs-bottom-bar-color:var(--primary-color) !important;
 }
+
+/*.top-page {*/
+/*    position: relative;*/
+/*    z-index: 9;*/
+/*    height: 100vh;*/
+/*    overflow-y: auto;*/
+/*    background: #fff;*/
+/*}*/
