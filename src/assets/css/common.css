@@ -8,7 +8,8 @@ body {
     --primary-color: #ff9854;
     /*修改搜索框颜色*/
     --van-search-left-icon-color: var(--primary-color) !important;
-    --van-tabs-bottom-bar-color:var(--primary-color) !important;
+    --van-tabs-bottom-bar-color: var(--primary-color) !important;
+    --theme-linear-gradient: linear-gradient(90deg, #fa8c1d, #fcaf3f);
 }
 
 /*.top-page {*/

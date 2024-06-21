@@ -1,13 +1,20 @@
 <script setup>
 import {tabbarData} from "@/assets/data/tabbar.js";
 import {getAssetUrl} from "@/utils/load_assets.js";
-import {ref} from "vue";
-import {useRouter} from "vue-router";
+import {ref, watch} from "vue";
+import {useRoute, useRouter} from "vue-router";
+
+//监听路由改变时，找到对应的索引，设置currentIndex
+const route = useRoute()
+const currentIndex = ref(0)
+watch(route, (newRoute) => {
+  console.log(newRoute.path)
+  const index = tabbarData.findIndex(item => item.path === newRoute.path)
+  if (index === -1) return
+  currentIndex.value = index
+})
 
 const router = useRouter()
-
-
-let currentIndex = ref(0)
 const addActive = (index, path) => {
   currentIndex.value = index
   router.push(path)
@@ -35,6 +42,7 @@ const addActive = (index, path) => {
   height: 40px;
   display: flex;
   border-top: solid 1px #f3f3f3;
+  background: white;
 
   .tab-bar-item {
     flex: 1;
@@ -55,8 +63,6 @@ const addActive = (index, path) => {
       font-size: 12px;
       margin-top: 2px;
     }
-
-
   }
 }
 

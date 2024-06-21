@@ -5,3 +5,18 @@ export function getHomeHotSuggest() {
         url: "/home/hotSuggests"
     })
 }
+
+export function getHomeCategory() {
+    return SHrequest.get({
+        url: "/home/categories"
+    })
+}
+
+export function getHouseList(currentPage) {
+    return SHrequest.get({
+        url: "/home/houselist",
+        params: {
+            page: currentPage
+        }
+    })
+}

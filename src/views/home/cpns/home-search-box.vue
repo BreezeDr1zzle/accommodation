@@ -2,12 +2,13 @@
 import {useRouter} from "vue-router";
 import useCityStore from "@/stores/modules/city.js";
 import {storeToRefs} from "pinia";
-import {ref} from "vue";
+import {ref, computed} from "vue";
 import {formatMonthDay, getDiffDate} from "@/utils/format_data.js";
 import useHomeStore from "@/stores/modules/home.js";
+import useMainStore from "@/stores/modules/main.js";
 
 const router = useRouter()
-//跳转城市
+//跳转城市页面
 const cityClick = () => {
   router.push("/city")
 }
@@ -29,13 +30,12 @@ const cityStore = useCityStore()
 const {currentCity} = storeToRefs(cityStore)
 
 //获取当天日期
-const nowDate = new Date()
-const newData = new Date()
-newData.setDate(nowDate.getDate() + 1)
+const mainStore = useMainStore()
+const {startDate, endDate} = storeToRefs(mainStore)
 
-const startDate = ref(formatMonthDay(nowDate))
-const endDate = ref(formatMonthDay(newData))
-const stayCount = ref(getDiffDate(nowDate, newData))
+const startDateStr = computed(() => formatMonthDay(startDate.value, "MM月DD日"))
+const endDateStr = computed(() => formatMonthDay(endDate.value, "MM月DD日"))
+const stayCount = ref(getDiffDate(startDate.value, endDate.value))
 
 //日历范围
 const showCalendar = ref(false)
@@ -50,8 +50,8 @@ const formatter = (day) => {
 const onConfirm = (value) => {
   const selectStartDate = value[0]
   const selectEndDate = value[1]
-  startDate.value = formatMonthDay(selectStartDate)
-  endDate.value = formatMonthDay(selectEndDate)
+  startDate.value = selectStartDate
+  endDate.value = selectEndDate
   stayCount.value = getDiffDate(selectStartDate, selectEndDate)
   showCalendar.value = false
 }
@@ -61,9 +61,20 @@ const isShowCalendar = () => {
 
 //热点建议展示
 const homeStore = useHomeStore()
-homeStore.fetchHomeHotSuggestsData()
-const {hotSuggest} = storeToRefs(homeStore)
-console.log(hotSuggest)
+const {hotSuggests} = storeToRefs(homeStore)
+
+
+//跳转搜索页面
+const searchClick = () => {
+  router.push({
+    path: "/search",
+    query: {
+      startDate: startDate.value,
+      endDate: endDate.value,
+      currentCity: currentCity.value.cityName
+    }
+  })
+}
 </script>
 
 <template>
@@ -81,7 +92,7 @@ console.log(hotSuggest)
       <div class="start">
         <div class="date">
           <span class="tips">入住</span>
-          <span class="time">{{ startDate }}</span>
+          <span class="time">{{ startDateStr }}</span>
         </div>
       </div>
       <div class="stay">
@@ -90,7 +101,7 @@ console.log(hotSuggest)
       <div class="end">
         <div class="date">
           <span class="tips">离店</span>
-          <span class="time">{{ endDate }}</span>
+          <span class="time">{{ endDateStr }}</span>
         </div>
       </div>
     </div>
@@ -101,21 +112,29 @@ console.log(hotSuggest)
         :formatter="formatter"
         :round="false"
         @confirm="onConfirm"/>
+    <!--  价格人数选择 -->
     <div class="section price-counter">
       <div class="start tips">价格不限</div>
       <div class="end tips">人数不限</div>
     </div>
+    <!--  关键字搜索  -->
     <div class="section specific-search">
       <span class="tips">关键字/位置/酒店名</span>
     </div>
-    <div class="hotSuggests">
-      <template v-for="(item,index) in hotSuggest" :key="index">
-          {{item.tagText.text}}
+    <!--  热门城市建议  -->
+    <div class="section hot-suggests">
+      <template v-for="(item,index) in hotSuggests" :key="index">
+        <div
+            class="suggests"
+            :style="{color:item.tagText.color,background: item.tagText.background.color}">
+          {{ item.tagText.text }}
+        </div>
       </template>
     </div>
+    <div class="section startSearch">
+      <div class="btn" @click="searchClick">开始搜索</div>
+    </div>
   </div>
-
-
 </template>
 
 <style lang="less" scoped>
@@ -187,6 +206,7 @@ console.log(hotSuggest)
   align-items: center;
   padding: 0 20px;
   color: #999;
+  height: 44px;
 
   .start {
     flex: 1;
@@ -201,8 +221,33 @@ console.log(hotSuggest)
   }
 }
 
-.specific-search {
-  margin-top: 15px;
+
+.hot-suggests {
+  height: auto;
+
+  .suggests {
+    padding: 4px 8px;
+    margin: 5px 3px;
+    border-radius: 14px;
+    font-size: 12px;
+    color: black;
+  }
 }
 
+.startSearch {
+  margin: 10px 0;
+  height: auto;
+
+  .btn {
+    width: 342px;
+    height: 38px;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 38px;
+    text-align: center;
+    border-radius: 20px;
+    color: #fff;
+    background-image: var(--theme-linear-gradient);
+  }
+}
 </style>
