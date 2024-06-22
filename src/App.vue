@@ -3,7 +3,9 @@ import TabBar from "@/components/tab-bar/TabBar.vue";
 import TabBarVant from "@/components/tab-bar/TabBarVant.vue";
 import {useRouter, useRoute} from "vue-router";
 import {ref, computed, watch} from "vue";
-
+import Loading from "@/components/loading/loading.vue";
+import useMainStore from "@/stores/modules/main.js";
+import {storeToRefs} from "pinia";
 
 const route = useRoute()
 const router = useRouter()
@@ -27,7 +29,9 @@ const isShow = computed(() => {
 //   isShow.value = to.meta.hideTabBar
 // })
 
-
+//loading
+const mainStore = useMainStore()
+const {isLoading} = storeToRefs(mainStore)
 </script>
 
 <template>
@@ -36,6 +40,7 @@ const isShow = computed(() => {
     <!--    <tab-bar/>-->
     <tab-bar v-if="!isShow"/>
     <!--    <tab-bar-vant/>-->
+    <loading v-if="isLoading"/>
   </div>
 </template>
 
